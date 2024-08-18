@@ -15,7 +15,8 @@ type CLI struct {
 	LogFormat string `help:"Log format to use." enum:"json,pretty,logfmt" default:"pretty"`
 	Toolbox   string `help:"The directory to load tools from" default:"~/.config/ayo/toolbox" type:"existingdir" env:"AYO_TOOLBOX"` //nolint: lll
 
-	Chat Chat `cmd:"" help:"Send a message to the chatbot" default:"withargs"`
+	Chat    Chat    `cmd:"" help:"Send a message to the chatbot" default:"withargs"`
+	Version Version `cmd:"" help:"Show the version information"`
 }
 
 func main() {

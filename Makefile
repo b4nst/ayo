@@ -7,6 +7,17 @@ BUILD_DIR=dist
 # Coverage file name
 COVERAGE_FILE=$(BUILD_DIR)/coverage.out
 
+project_version := $(shell git describe --tags --always)
+git_commit := $(shell git rev-parse --verify HEAD)
+date := $(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
+author := $(USER)
+
+LDFLAGS := -s -w
+LDFLAGS += -X 'github.com/banst/ayo/cmd/ayo/config.Version=$(project_version)'
+LDFLAGS += -X 'github.com/banst/ayo/cmd/ayo/config.Commit=$(git_commit)'
+LDFLAGS += -X 'github.com/banst/ayo/cmd/ayo/config.Date=$(date)'
+LDFLAGS += -X 'github.com/banst/ayo/cmd/ayo/config.BuiltBy=$(author)'
+
 # Default target
 .PHONY: all
 all: build
@@ -15,7 +26,7 @@ all: build
 .PHONY: build
 build-go: ## Build the Go project
 	@mkdir -p $(BUILD_DIR)
-	go build -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/ayo
+	go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/ayo
 
 # Build the Documentation
 .PHONY: build-docs

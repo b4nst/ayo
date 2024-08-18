@@ -19,6 +19,12 @@ builds:
   - env:
       - CGO_ENABLED=0
     main: ./cmd/ayo/
+    ldflags:
+      - -s -w
+      - -X 'github.com/banst/ayo/cmd/ayo/config.Version={{.Version}}'
+      - -X 'github.com/banst/ayo/cmd/ayo/config.Commit={{.Commit}}'
+      - -X 'github.com/banst/ayo/cmd/ayo/config.Date={{.Date}}'
+      - -X 'github.com/banst/ayo/cmd/ayo/config.BuiltBy=goreleaser'
     goos:
       - linux
       - windows
