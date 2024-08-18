@@ -100,8 +100,8 @@ func TestLoadTools(t *testing.T) {
 	t.Run("nominal", func(t *testing.T) {
 		t.Parallel()
 		dir := t.TempDir()
-		tools := []*Tool{
-			{
+		tools := map[string]*Tool{
+			"echo": {
 				Cmd:  "echo",
 				Args: []string{"Hello, World!"},
 				Tool: api.Tool{
@@ -112,25 +112,24 @@ func TestLoadTools(t *testing.T) {
 					},
 				},
 			},
-			{
-				Cmd:  "echo",
-				Args: []string{"Goodbye, World!"},
+			"cat": {
+				Cmd:  "cat",
+				Args: []string{"file.txt"},
 				Tool: api.Tool{
 					Type: "function",
 					Function: api.ToolFunction{
-						Name:        "echo",
-						Description: "Echoes a message",
+						Name:        "cat",
+						Description: "Cats a file",
 					},
 				},
 			},
 		}
-		for i, tool := range tools {
+		for _, tool := range tools {
 			f, err := os.CreateTemp(dir, "*_tool.json")
 			require.NoError(t, err)
 			defer f.Close()
 			err = json.NewEncoder(f).Encode(tool)
 			require.NoError(t, err)
-			tools[i] = tool
 		}
 
 		actual, err := LoadTools(dir)

@@ -44,7 +44,7 @@ func LoadTool(file string) (*Tool, error) {
 }
 
 // LoadTools loads a list of tools from a directory
-func LoadTools(dir string) ([]*Tool, error) {
+func LoadTools(dir string) (map[string]*Tool, error) {
 	// Get the list of json files in the directory
 	var files []string
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
@@ -61,7 +61,7 @@ func LoadTools(dir string) ([]*Tool, error) {
 	}
 
 	// Load the tools concurrently, pool of 10 goroutines max
-	var tools []*Tool
+	tools := make(map[string]*Tool, len(files))
 	lock := sync.Mutex{}
 	eg := new(errgroup.Group)
 	eg.SetLimit(10)
@@ -75,7 +75,7 @@ func LoadTools(dir string) ([]*Tool, error) {
 
 			lock.Lock()
 			defer lock.Unlock()
-			tools = append(tools, tool)
+			tools[tool.Function.Name] = tool
 			return nil
 		})
 	}
