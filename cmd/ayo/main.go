@@ -8,10 +8,12 @@ import (
 	"github.com/banst/ayo/pkg/log"
 )
 
+const logPackagePrefix = "main::"
+
 type CLI struct {
 	Verbose   bool   `help:"Enable verbose mode." short:"v" default:"false"`
 	LogFormat string `help:"Log format to use." enum:"json,pretty,logfmt" default:"pretty"`
-  ToolDir   string `help:"The directory to load tools from" default:"~/.config/ayo/tools" type:"existingdir"`
+	ToolDir   string `help:"The directory to load tools from" default:"~/.config/ayo/tools" type:"existingdir"`
 
 	Chat Chat `cmd:"" help:"Send a message to the chatbot" default:"withargs"`
 }

@@ -15,13 +15,14 @@ import (
 const logPackagePrefix = "ai::"
 
 type AI struct {
+	model    string
 	client   *api.Client
 	stream   bool
 	tools    map[string]*tool.Tool
 	apiTools []api.Tool
 }
 
-func NewAI(tools map[string]*tool.Tool) *AI {
+func NewAI(tools map[string]*tool.Tool, model string) *AI {
 	client := api.NewClient(envconfig.Host(), http.DefaultClient)
 	apiTools := make([]api.Tool, len(tools))
 	for _, t := range tools {
@@ -33,6 +34,7 @@ func NewAI(tools map[string]*tool.Tool) *AI {
 		tools:    tools,
 		stream:   false,
 		apiTools: apiTools,
+		model:    model,
 	}
 }
 
@@ -57,7 +59,7 @@ func (ai *AI) Chat(ctx context.Context, message string) error {
 			if !ok {
 				return fmt.Errorf("tool %s not found", f.Name)
 			}
-			log.Debug("running tool", "tool", f.Name)
+			log.Debug("running tool", "tool", f.Name, "args", f.Arguments)
 			toolresp, err := t.Run(f.Arguments)
 			if err != nil {
 				return err
@@ -78,7 +80,7 @@ func (ai *AI) query(ctx context.Context, messages []api.Message) (api.Message, e
 	}
 
 	req := &api.ChatRequest{
-		Model:    "llama3.1",
+		Model:    ai.model,
 		Messages: messages,
 		Tools:    ai.apiTools,
 		Stream:   &ai.stream,

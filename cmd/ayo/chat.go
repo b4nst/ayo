@@ -10,11 +10,12 @@ import (
 )
 
 type Chat struct {
-	Args []string `arg:"" help:"The message to send to the assistant"`
+	Model string   `help:"The model to use for the chatbot" default:"llama3.1"`
+	Args  []string `arg:"" help:"The message to send to the assistant"`
 }
 
 func (c *Chat) Run(ctx context.Context, cli *CLI) error {
-	log := log.FromContext(ctx).With("cmd", "chat")
+	log := log.FromContext(ctx).With("caller", logPackagePrefix+"Chat:Run")
 
 	log.Debug("loading tools", "dir", cli.ToolDir)
 	tools, err := tool.LoadTools(cli.ToolDir)
@@ -23,8 +24,8 @@ func (c *Chat) Run(ctx context.Context, cli *CLI) error {
 	}
 	log.Debug("tools loaded", "total", len(tools))
 
-	ai := ayoai.NewAI(tools)
-	log.Debug("ai loaded")
+	ai := ayoai.NewAI(tools, c.Model)
+	log.Debug("ai loaded", "model", c.Model)
 
 	return ai.Chat(ctx, strings.Join(c.Args, " "))
 }
