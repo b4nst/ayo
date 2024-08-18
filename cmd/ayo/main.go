@@ -13,7 +13,7 @@ const logPackagePrefix = "main::"
 type CLI struct {
 	Verbose   bool   `help:"Enable verbose mode." short:"v" default:"false"`
 	LogFormat string `help:"Log format to use." enum:"json,pretty,logfmt" default:"pretty"`
-	Toolbox   string `help:"The directory to load tools from" default:"~/.config/ayo/toolbox" type:"existingdir" env:"AYO_TOOLBOX"`
+	Toolbox   string `help:"The directory to load tools from" default:"~/.config/ayo/toolbox" type:"existingdir" env:"AYO_TOOLBOX"` //nolint: lll
 
 	Chat Chat `cmd:"" help:"Send a message to the chatbot" default:"withargs"`
 }
