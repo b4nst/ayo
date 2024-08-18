@@ -13,9 +13,18 @@ all: build
 
 # Build the Go project
 .PHONY: build
-build: ## Build the Go project
+build-go: ## Build the Go project
 	@mkdir -p $(BUILD_DIR)
 	go build -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/ayo
+
+# Build the Documentation
+.PHONY: build-docs
+build-docs: ## Build the Documentation
+	mdbook build -d ../$(BUILD_DIR)/docs docs/
+
+# Build the project
+.PHONY: build
+build: build-go build-docs ## Build the project
 
 # Run the Go project
 .PHONY: run

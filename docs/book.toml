@@ -1,0 +1,13 @@
+[book]
+authors = ["banst"]
+language = "en"
+multilingual = false
+src = "src"
+title = "ayo"
+
+[build]
+extra-watch-dirs = ["plugins/whichlang"]
+
+[output.html]
+additional-css = ["plugins/whichlang/whichlang.css", "devicon.css"]
+additional-js = ["plugins/whichlang/whichlang.js"]
