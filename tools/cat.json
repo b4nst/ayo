@@ -1,0 +1,20 @@
+{
+  "type": "function",
+  "function": {
+    "name": "cat",
+    "description": "Get the content of a file",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "The file to read"
+        }
+      }
+    }
+  },
+  "cmd": "cat",
+  "args": [
+    "{{.file}}"
+  ]
+}
