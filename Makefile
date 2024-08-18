@@ -2,7 +2,7 @@
 BINARY_NAME=ayo
 
 # Output directory for the build
-BUILD_DIR=build
+BUILD_DIR=dist
 
 # Coverage file name
 COVERAGE_FILE=$(BUILD_DIR)/coverage.out

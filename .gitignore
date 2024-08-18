@@ -80,4 +80,4 @@ Temporary Items
 *.icloud
 
 # Build directory
-build/
+dist/
