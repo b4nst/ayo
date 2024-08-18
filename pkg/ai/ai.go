@@ -24,7 +24,7 @@ type AI struct {
 
 func NewAI(tools map[string]*tool.Tool, model string) *AI {
 	client := api.NewClient(envconfig.Host(), http.DefaultClient)
-	apiTools := make([]api.Tool, len(tools))
+	apiTools := make([]api.Tool, 0, len(tools))
 	for _, t := range tools {
 		apiTools = append(apiTools, t.Tool)
 	}
@@ -48,7 +48,8 @@ func (ai *AI) Chat(ctx context.Context, message string) error {
 		}
 		history = append(history, answer)
 
-		if len(answer.ToolCalls) <= 0 {
+		if len(answer.ToolCalls) == 0 {
+			//nolint:forbidigo // TODO: refactor this print.
 			fmt.Println(answer.Content)
 			return nil
 		}
@@ -91,11 +92,4 @@ func (ai *AI) query(ctx context.Context, messages []api.Message) (api.Message, e
 	}
 
 	return answer, nil
-}
-
-func chatResponse(ch chan<- api.Message) func(api.ChatResponse) error {
-	return func(resp api.ChatResponse) error {
-		ch <- resp.Message
-		return nil
-	}
 }

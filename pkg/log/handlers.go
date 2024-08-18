@@ -10,7 +10,7 @@ import (
 
 // NewCloudFunctionHandler returns a new log handler for Google Cloud Functions.
 func NewCloudFunctionHandler(w io.Writer, opt *slog.HandlerOptions) slog.Handler {
-	opt.ReplaceAttr = func(groups []string, a slog.Attr) slog.Attr {
+	opt.ReplaceAttr = func(_ []string, a slog.Attr) slog.Attr {
 		if a.Key == "level" {
 			a.Key = "severity"
 			a.Value = slog.StringValue(strings.ToLower(a.Value.String()))

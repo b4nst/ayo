@@ -23,10 +23,10 @@ func (t *Tool) Run(values map[string]any) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return exec.Command(t.Cmd, args...).CombinedOutput()
+	return exec.Command(t.Cmd, args...).CombinedOutput() //nolint:gosec // This is a tool runner.
 }
 
-// LoadTool loads a tool from a json file
+// LoadTool loads a tool from a json file.
 func LoadTool(file string) (*Tool, error) {
 	f, err := os.Open(file)
 	if err != nil {
@@ -43,7 +43,7 @@ func LoadTool(file string) (*Tool, error) {
 	return &tool, nil
 }
 
-// LoadTools loads a list of tools from a directory
+// LoadTools loads a list of tools from a directory.
 func LoadTools(dir string) (map[string]*Tool, error) {
 	// Get the list of json files in the directory
 	var files []string
@@ -68,7 +68,7 @@ func LoadTools(dir string) (map[string]*Tool, error) {
 	for _, f := range files {
 		file := f // capture the loop variable
 		eg.Go(func() error {
-			tool, err := LoadTool(file)
+			tool, err := LoadTool(file) //nolint:govet // Shadowing err is fine here.
 			if err != nil {
 				return err
 			}
@@ -80,7 +80,7 @@ func LoadTools(dir string) (map[string]*Tool, error) {
 		})
 	}
 
-	if err := eg.Wait(); err != nil {
+	if err = eg.Wait(); err != nil {
 		return nil, err
 	}
 	return tools, nil
