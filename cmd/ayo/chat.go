@@ -18,7 +18,7 @@ func (c *Chat) Run(ctx context.Context, cli *CLI) error {
 	log := log.FromContext(ctx).With("caller", logPackagePrefix+"Chat:Run")
 
 	log.Debug("loading tools", "dir", cli.Toolbox)
-	tools, err := tool.LoadTools(cli.Toolbox)
+	tools, err := tool.LoadAll(cli.Toolbox)
 	if err != nil {
 		return err
 	}

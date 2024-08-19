@@ -11,6 +11,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+const Ext = ".json"
+
 type Tool struct {
 	api.Tool
 	Cmd         string   `json:"cmd"`
@@ -26,8 +28,8 @@ func (t *Tool) Run(values map[string]any) ([]byte, error) {
 	return exec.Command(t.Cmd, args...).CombinedOutput() //nolint:gosec // This is a tool runner.
 }
 
-// LoadTool loads a tool from a json file.
-func LoadTool(file string) (*Tool, error) {
+// Load loads a tool from a json file.
+func Load(file string) (*Tool, error) {
 	f, err := os.Open(file)
 	if err != nil {
 		return nil, err
@@ -43,22 +45,10 @@ func LoadTool(file string) (*Tool, error) {
 	return &tool, nil
 }
 
-// LoadTools loads a list of tools from a directory.
-func LoadTools(dir string) (map[string]*Tool, error) {
+// LoadAll loads a list of tools from a directory.
+func LoadAll(dir string) (map[string]*Tool, error) {
 	// Get the list of json files in the directory
-	var files []string
-	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if !info.IsDir() && filepath.Ext(path) == ".json" {
-			files = append(files, path)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
+	files, err := ListFiles(dir)
 
 	// Load the tools concurrently, pool of 10 goroutines max
 	tools := make(map[string]*Tool, len(files))
@@ -68,7 +58,7 @@ func LoadTools(dir string) (map[string]*Tool, error) {
 	for _, f := range files {
 		file := f // capture the loop variable
 		eg.Go(func() error {
-			tool, err := LoadTool(file) //nolint:govet // Shadowing err is fine here.
+			tool, err := Load(file) //nolint:govet // Shadowing err is fine here.
 			if err != nil {
 				return err
 			}
@@ -84,4 +74,23 @@ func LoadTools(dir string) (map[string]*Tool, error) {
 		return nil, err
 	}
 	return tools, nil
+}
+
+// ListToolFiles lists the tool files in a directory.
+func ListFiles(dir string) ([]string, error) {
+	// Get the list of json files in the directory
+	var files []string
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && filepath.Ext(path) == Ext {
+			files = append(files, path)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return files, nil
 }

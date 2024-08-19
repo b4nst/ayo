@@ -39,7 +39,7 @@ build: build-go build-docs ## Build the project
 
 # Run the Go project
 .PHONY: run
-run: build ## Build and run the Go project
+run: build-go ## Build and run the Go project
 	./$(BUILD_DIR)/$(BINARY_NAME)
 
 # Clean up the build artifacts

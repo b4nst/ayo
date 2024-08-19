@@ -17,6 +17,7 @@ type CLI struct {
 
 	Chat    Chat    `cmd:"" help:"Send a message to the chatbot" default:"withargs"`
 	Version Version `cmd:"" help:"Show the version information"`
+	Tool    Tool    `cmd:"" help:"Get information about a tool"`
 }
 
 func main() {
