@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/b4nst/ayo/compare/v1.0.0...v1.1.0) (2024-08-19)
+
+
+### Features
+
+* add tool command ([2435f22](https://github.com/b4nst/ayo/commit/2435f2223cbc2e3adf8637f19d6e88a8fc26d668))
+* add version command ([12fb5c9](https://github.com/b4nst/ayo/commit/12fb5c9347e6e8bf1de3a2c57c818a634130cabf))
+
+
+### Bug Fixes
+
+* fix lint issues ([fc52b11](https://github.com/b4nst/ayo/commit/fc52b1147bf0642db47ec140c567728b0a5ac2af))
+
 ## 1.0.0 (2024-08-18)
 
 
