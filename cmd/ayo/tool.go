@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"strings"
 	"text/tabwriter"
 
@@ -9,6 +10,8 @@ import (
 
 	"github.com/banst/ayo/pkg/tool"
 )
+
+type Tools []string
 
 type Tool struct {
 	Tools []string `arg:"" optional:"" help:"Filename of the tool to get information about. If empty, all tools from the toolbox are listed." type:"existingfile"` //nolint:lll // Struct tags are long.
@@ -27,32 +30,15 @@ func (t *Tool) Run(context *kong.Context, cli *CLI) error {
 
 	for i, tf := range t.Tools {
 		if i > 0 {
-			if _, err := fmt.Fprintln(tw); err != nil {
-				return err
-			}
+			fmt.Fprintln(tw)
 		}
+		fmt.Fprintf(tw, "File:\t%s\n", tf)
 
-		if _, err := fmt.Fprintf(tw, "File:\t%s\n", tf); err != nil {
-			return err
-		}
-
-		if t, err := tool.Load(tf); err != nil {
-			if _, err := fmt.Fprintf(tw, "Error:\t%s\n", err); err != nil {
-				return err
-			}
+		t, err := tool.Load(tf)
+		if err != nil {
+			fmt.Fprintf(tw, "Error:\t%s\n", err)
 		} else {
-			params := []string{}
-			for name, p := range t.Function.Parameters.Properties {
-				params = append(params, fmt.Sprintf("%s %s", name, p.Type))
-			}
-			function := fmt.Sprintf("%s(%s)", t.Function.Name, strings.Join(params, ", "))
-
-			cmd := strings.Join(append([]string{t.Cmd}, t.Args...), " ")
-
-			format := "Function:\t%s\nDescription:\t%s\nCommand:\t%s\n"
-			if _, err := fmt.Fprintf(tw, format, function, t.Function.Description, cmd); err != nil {
-				return err
-			}
+			printToolInfo(tw, t)
 		}
 
 		if err := tw.Flush(); err != nil {
@@ -61,4 +47,17 @@ func (t *Tool) Run(context *kong.Context, cli *CLI) error {
 	}
 
 	return nil
+}
+
+func printToolInfo(w io.Writer, t *tool.Tool) {
+	params := []string{}
+	for name, p := range t.Function.Parameters.Properties {
+		params = append(params, fmt.Sprintf("%s %s", name, p.Type))
+	}
+	function := fmt.Sprintf("%s(%s)", t.Function.Name, strings.Join(params, ", "))
+
+	cmd := strings.Join(append([]string{t.Cmd}, t.Args...), " ")
+
+	format := "Function:\t%s\nDescription:\t%s\nCommand:\t%s\n"
+	fmt.Fprintf(w, format, function, t.Function.Description, cmd)
 }
