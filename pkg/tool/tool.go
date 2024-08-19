@@ -47,18 +47,22 @@ func Load(file string) (*Tool, error) {
 
 // LoadAll loads a list of tools from a directory.
 func LoadAll(dir string) (map[string]*Tool, error) {
+	tools := make(map[string]*Tool)
+
 	// Get the list of json files in the directory
 	files, err := ListFiles(dir)
+	if err != nil {
+		return tools, err
+	}
 
 	// Load the tools concurrently, pool of 10 goroutines max
-	tools := make(map[string]*Tool, len(files))
 	lock := sync.Mutex{}
 	eg := new(errgroup.Group)
 	eg.SetLimit(10)
 	for _, f := range files {
 		file := f // capture the loop variable
 		eg.Go(func() error {
-			tool, err := Load(file) //nolint:govet // Shadowing err is fine here.
+			tool, err := Load(file)
 			if err != nil {
 				return err
 			}
@@ -70,10 +74,7 @@ func LoadAll(dir string) (map[string]*Tool, error) {
 		})
 	}
 
-	if err = eg.Wait(); err != nil {
-		return nil, err
-	}
-	return tools, nil
+	return tools, eg.Wait()
 }
 
 // ListToolFiles lists the tool files in a directory.
