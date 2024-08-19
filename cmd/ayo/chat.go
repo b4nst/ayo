@@ -20,7 +20,7 @@ func (c *Chat) Run(ctx context.Context, cli *CLI) error {
 	log.Debug("loading tools", "dir", cli.Toolbox)
 	tools, err := tool.LoadAll(cli.Toolbox)
 	if err != nil {
-		return err
+		log.Warn("failed to load some tools", "error", err)
 	}
 	log.Debug("tools loaded", "total", len(tools))
 

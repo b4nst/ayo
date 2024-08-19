@@ -40,8 +40,12 @@ func NewAI(tools map[string]*tool.Tool, model string) *AI {
 
 func (ai *AI) Chat(ctx context.Context, message string) error {
 	log := log.FromContext(ctx).With("caller", logPackagePrefix+"AI:Chat")
+	init := Message("You are a CLI assistant with tool calling capabilities. Answer the question the best you can. Only use tool when you need to. Don't use a tool you don't have access to.", RoleSystem)
 
-	for history := []api.Message{Message(message, RoleUser)}; ; {
+	for history := []api.Message{
+		init,
+		Message(message, RoleUser),
+	}; ; {
 		answer, err := ai.query(ctx, history)
 		if err != nil {
 			return err
@@ -55,15 +59,17 @@ func (ai *AI) Chat(ctx context.Context, message string) error {
 		}
 
 		for _, tc := range answer.ToolCalls {
+			log.Debug("tool call requested", "function", tc.Function.Name, "args", tc.Function.Arguments)
 			f := tc.Function
 			t, ok := ai.tools[f.Name]
 			if !ok {
-				return fmt.Errorf("tool %s not found", f.Name)
+				history = append(history, Message("You don't have access to that tool.", RoleSystem))
+				continue
 			}
-			log.Debug("running tool", "tool", f.Name, "args", f.Arguments)
 			toolresp, err := t.Run(f.Arguments)
 			if err != nil {
-				return err
+				history = append(history, Message(fmt.Sprintf("Error running tool: %v", err), RoleTool))
+				continue
 			}
 			history = append(history, Message(string(toolresp), RoleTool))
 		}
