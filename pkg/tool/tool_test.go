@@ -16,7 +16,7 @@ func TestLoadTool(t *testing.T) {
 	t.Run("missing file", func(t *testing.T) {
 		t.Parallel()
 
-		_, err := LoadTool("missing.json")
+		_, err := Load("missing.json")
 		if assert.Error(t, err) {
 			assert.Contains(t, err.Error(), "no such file or directory")
 		}
@@ -30,7 +30,7 @@ func TestLoadTool(t *testing.T) {
 		_, err = f.WriteString("bad json")
 		require.NoError(t, err)
 
-		_, err = LoadTool(f.Name())
+		_, err = Load(f.Name())
 		if assert.Error(t, err) {
 			assert.Contains(t, err.Error(), "invalid character")
 		}
@@ -55,7 +55,7 @@ func TestLoadTool(t *testing.T) {
 		err = json.NewEncoder(f).Encode(tool)
 		require.NoError(t, err)
 
-		actual, err := LoadTool(f.Name())
+		actual, err := Load(f.Name())
 		assert.NoError(t, err)
 		assert.Equal(t, tool, actual)
 	})
@@ -67,7 +67,7 @@ func TestLoadTools(t *testing.T) {
 	t.Run("missing directory", func(t *testing.T) {
 		t.Parallel()
 
-		_, err := LoadTools("missing")
+		_, err := LoadAll("missing")
 		if assert.Error(t, err) {
 			assert.Contains(t, err.Error(), "no such file or directory")
 		}
@@ -77,7 +77,7 @@ func TestLoadTools(t *testing.T) {
 		t.Parallel()
 		dir := t.TempDir()
 
-		tools, err := LoadTools(dir)
+		tools, err := LoadAll(dir)
 		assert.NoError(t, err)
 		assert.Empty(t, tools)
 	})
@@ -91,7 +91,7 @@ func TestLoadTools(t *testing.T) {
 		_, err = f.WriteString("bad json")
 		require.NoError(t, err)
 
-		_, err = LoadTools(dir)
+		_, err = LoadAll(dir)
 		if assert.Error(t, err) {
 			assert.Contains(t, err.Error(), "invalid character")
 		}
@@ -132,7 +132,7 @@ func TestLoadTools(t *testing.T) {
 			require.NoError(t, err)
 		}
 
-		actual, err := LoadTools(dir)
+		actual, err := LoadAll(dir)
 		assert.NoError(t, err)
 		assert.Equal(t, tools, actual)
 	})
